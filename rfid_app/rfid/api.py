@@ -83,6 +83,64 @@ def remove_rfid(rfid, new_status="Pripravljen"):
     }
 
 
+@frappe.whitelist()
+def replace_rfid(ucenec, new_rfid):
+    """Atomically replace a student's RFID.
+
+    Old RFID → Neaktiven (lost), new RFID → Aktiven.
+    Returns data for both confirmation printouts.
+    """
+    if not frappe.has_permission("RFID", "write") or not frappe.has_permission("Ucenci", "write"):
+        frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
+
+    ucenec_doc = frappe.get_doc("Ucenci", ucenec, for_update=True)
+
+    if not ucenec_doc.rfid:
+        frappe.throw(_("Učenec {0} nima dodeljenega RFID-ja za zamenjavo").format(
+            ucenec_doc.full_name
+        ))
+
+    old_rfid_name = ucenec_doc.rfid
+    old_rfid_doc = frappe.get_doc("RFID", old_rfid_name, for_update=True)
+
+    new_rfid_doc = frappe.get_doc("RFID", new_rfid, for_update=True)
+
+    if new_rfid_doc.status != "Pripravljen":
+        frappe.throw(
+            _("Novi RFID {0} ni na voljo (status: {1})").format(new_rfid_doc.name, new_rfid_doc.status)
+        )
+
+    if new_rfid_doc.link_ucenec:
+        linked_name = frappe.db.get_value("Ucenci", new_rfid_doc.link_ucenec, "full_name")
+        frappe.throw(
+            _("RFID {0} je že dodeljen učencu {1}").format(new_rfid_doc.name, linked_name or new_rfid_doc.link_ucenec)
+        )
+
+    old_rfid_doc.status = "Neaktiven"
+    old_rfid_doc.link_ucenec = None
+    old_rfid_doc.save(ignore_permissions=True)
+
+    new_rfid_doc.status = "Aktiven"
+    new_rfid_doc.link_ucenec = ucenec
+    new_rfid_doc.save(ignore_permissions=True)
+
+    ucenec_doc.rfid = new_rfid
+    ucenec_doc.save(ignore_permissions=True)
+
+    frappe.db.commit()
+
+    return {
+        "status": "ok",
+        "message": _("RFID zamenjan: {0} → {1}").format(old_rfid_name, new_rfid),
+        "old_rfid": old_rfid_name,
+        "new_rfid": new_rfid,
+        "student_name": ucenec_doc.full_name,
+        "student_id": ucenec_doc.name,
+        "oddelek": ucenec_doc.oddelek,
+        "ucenec_id": ucenec_doc.ucenec_id,
+    }
+
+
 def on_trash_rfid(doc, method):
     """Release linked student when RFID is deleted."""
     if doc.link_ucenec:
