@@ -3,7 +3,7 @@ app_title = "RFID App"
 app_publisher = "osaz"
 app_description = "RFID tag management for school nutrition"
 app_color = "#2490EF"
-app_icon = "octicon octicon-radio-tower"
+app_icon = "fa fa-rss"
 app_email = "info@osaz.si"
 app_license = "MIT"
 

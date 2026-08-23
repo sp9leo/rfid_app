@@ -7,7 +7,7 @@
  "doctype": "Workspace",
  "for_user": "Administrator",
  "hide_custom": 0,
- "icon": "octicon octicon-radio-tower",
+ "icon": "fa fa-rss",
  "indicator_color": "green",
  "is_hidden": 0,
  "label": "Rfid Module Workspace",
