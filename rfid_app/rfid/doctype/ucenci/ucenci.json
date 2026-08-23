@@ -1,0 +1,167 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "hash",
+ "creation": "2024-07-28 11:58:33.272180",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "ucenec_id",
+  "full_name",
+  "ime",
+  "priimek",
+  "oddelek",
+  "solsko_leto",
+  "column_break_qezp",
+  "rfid",
+  "izberi_rfid",
+  "saop_id",
+  "section_break_xvqe",
+  "zajtrk",
+  "malica",
+  "kosilo",
+  "column_break_zzoc",
+  "vozac",
+  "dieta"
+ ],
+ "fields": [
+  {
+   "fieldname": "ime",
+   "fieldtype": "Data",
+   "label": "Ime"
+  },
+  {
+   "fieldname": "priimek",
+   "fieldtype": "Data",
+   "label": "Priimek"
+  },
+  {
+   "fieldname": "oddelek",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Oddelek",
+   "options": "Oddelek"
+  },
+  {
+   "bold": 1,
+   "fieldname": "ucenec_id",
+   "fieldtype": "Data",
+   "label": "Ucenec ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "full name"
+  },
+  {
+   "default": "0",
+   "fieldname": "zajtrk",
+   "fieldtype": "Check",
+   "label": "Zajtrk"
+  },
+  {
+   "default": "0",
+   "fieldname": "malica",
+   "fieldtype": "Check",
+   "label": "Malica"
+  },
+  {
+   "default": "0",
+   "fieldname": "kosilo",
+   "fieldtype": "Check",
+   "label": "Kosilo"
+  },
+  {
+   "default": "0",
+   "fieldname": "dieta",
+   "fieldtype": "Check",
+   "label": "Dieta"
+  },
+  {
+   "default": "0",
+   "fieldname": "vozac",
+   "fieldtype": "Check",
+   "label": "Vozač"
+  },
+  {
+   "fieldname": "column_break_qezp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xvqe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_zzoc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rfid",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "RFID",
+   "options": "RFID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "izberi_rfid",
+   "fieldtype": "Button",
+   "label": "Izberi RFID"
+  },
+  {
+   "fetch_from": "oddelek.school_year",
+   "fieldname": "solsko_leto",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_standard_filter": 1,
+   "options": "Solsko leto",
+   "read_only": 1
+  },
+  {
+   "fieldname": "saop_id",
+   "fieldtype": "Data",
+   "label": "Saop_ID",
+   "no_copy": 1,
+   "permlevel": 1,
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "RFID",
+   "link_fieldname": "link_ucenec"
+  }
+ ],
+ "modified": "2024-11-09 14:55:39.071922",
+ "modified_by": "Administrator",
+ "module": "Rfid",
+ "name": "Ucenci",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name",
+ "track_changes": 1
+}

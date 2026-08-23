@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "autoname": "field:uuid",
+ "creation": "2024-07-28 12:01:02.713468",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "uuid",
+  "status",
+  "column_break_exrv",
+  "oddelek",
+  "link_ucenec",
+  "izbrisi_rfid"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "uuid",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "UUID",
+   "non_negative": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_exrv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Aktiven=V uporabi, Neaktiven=izgubljen, uničen ipd..",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "RFID status",
+   "options": "Pripravljen\nAktiven\nNeaktiven"
+  },
+  {
+   "fieldname": "link_ucenec",
+   "fieldtype": "Link",
+   "label": "Učenec",
+   "options": "Ucenci",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "depends_on": "eval: doc.link_ucenec != null;",
+   "fieldname": "izbrisi_rfid",
+   "fieldtype": "Button",
+   "label": "Odstrani RFID"
+  },
+  {
+   "fetch_from": "link_ucenec.oddelek",
+   "fieldname": "oddelek",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Oddelek"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Ucenci",
+   "link_fieldname": "rfid"
+  }
+ ],
+ "modified": "2024-11-09 12:45:03.243394",
+ "modified_by": "Administrator",
+ "module": "Rfid",
+ "name": "RFID",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Blue",
+   "title": "Pripravljen"
+  },
+  {
+   "color": "Green",
+   "title": "Aktiven"
+  },
+  {
+   "color": "Gray",
+   "title": "Neaktiven"
+  }
+ ],
+ "title_field": "uuid",
+ "track_changes": 1
+}

@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:school_year",
+ "creation": "2024-09-15 15:52:28.531283",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "school_year",
+  "school_year_start",
+  "school_year_end"
+ ],
+ "fields": [
+  {
+   "fieldname": "school_year",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Šolsko leto",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "school_year_start",
+   "fieldtype": "Date",
+   "label": "Začetek"
+  },
+  {
+   "fieldname": "school_year_end",
+   "fieldtype": "Date",
+   "label": "Konec"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-15 15:56:23.766966",
+ "modified_by": "Administrator",
+ "module": "Rfid",
+ "name": "Solsko leto",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

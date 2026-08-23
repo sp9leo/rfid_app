@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{razred}{oddelek}",
+ "creation": "2024-07-28 12:04:17.463432",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "razred",
+  "oddelek",
+  "next_oddelek",
+  "school_year"
+ ],
+ "fields": [
+  {
+   "fieldname": "oddelek",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Oddelek",
+   "options": "\nA\nB\nOPP",
+   "reqd": 1
+  },
+  {
+   "fieldname": "next_oddelek",
+   "fieldtype": "Link",
+   "label": "Napreduje v",
+   "options": "Oddelek"
+  },
+  {
+   "fieldname": "school_year",
+   "fieldtype": "Link",
+   "label": "Šolsko leto",
+   "options": "Solsko leto"
+  },
+  {
+   "fieldname": "razred",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Razred",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-24 20:04:03.849580",
+ "modified_by": "Administrator",
+ "module": "Rfid",
+ "name": "Oddelek",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
