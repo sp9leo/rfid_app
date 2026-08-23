@@ -3,16 +3,14 @@
 
 frappe.listview_settings["Ucenci"] = {
   onload(listview) {
-    listview.page.add_menu_button(__("Šolsko leto"), () => {});
-
-    listview.page.add_menu_button(
+    listview.page.add_menu_item(
       __("Prestavi v novo šolsko leto"),
       () => {
         show_migration_dialog();
       }
     );
 
-    listview.page.add_menu_button(
+    listview.page.add_menu_item(
       __("Popravi neujemanja RFID"),
       () => {
         frappe.call({
@@ -78,8 +76,6 @@ function show_migration_dialog() {
       },
     ],
     primary_action_label: __("Prikaži predogled"),
-    secondary_action_label: __("Izvedi migracijo"),
-    secondary_action: null,
     primary_action(values) {
       if (!values.from_year || !values.to_year) {
         frappe.msgprint(__("Izberite obe šolski leti."));
@@ -132,50 +128,53 @@ function show_migration_dialog() {
               html += "</tbody></table>";
             }
 
+            if (p.blocked.length === 0 && p.migrate.length > 0) {
+              html += `<div style="margin-top:15px"><button class="btn btn-primary btn-sm" id="btn-execute-migration">${__("Izvedi migracijo")}</button></div>`;
+            }
+
             html += "</div>";
             d.fields_dict.preview_section.$wrapper.html(html);
 
             if (p.blocked.length === 0 && p.migrate.length > 0) {
-              d.secondary_action = () => {
-                frappe.confirm(
-                  __("Ali ste prepričani? Prestavili boste {0} učencev v {1}.", [
-                    p.migrate.length,
-                    values.to_year,
-                  ]),
-                  () => {
-                    frappe.call({
-                      method: "rfid_app.rfid.api.execute_migration",
-                      args: {
-                        from_year: values.from_year,
-                        to_year: values.to_year,
-                        release_rfid_leavers: values.release_rfid || 0,
-                      },
-                      freeze: true,
-                      freeze_message: __("Izvajanje migracije..."),
-                      callback: function (r) {
-                        if (r.message) {
-                          const m = r.message;
-                          frappe.msgprint({
-                            title: __("Migracija končana"),
-                            indicator: m.failed.length > 0 ? "orange" : "green",
-                            message: __("Prestavljenih: {0}<br>Odpisanih: {1}<br>RFID vrnjenih: {2}<br>Napake: {3}", [
-                              m.migrated,
-                              m.leavers,
-                              m.leavers_released,
-                              m.failed.length,
-                            ]),
-                          });
-                          d.hide();
-                          cur_list.refresh();
-                        }
-                      },
-                    });
-                  }
-                );
-              };
-              d.secondary_action_label = __("Izvedi migracijo");
-              d.secondary_action_btn.addClass("btn-warning");
-              d.$body.find(".modal-footer .btn-secondary").show();
+              d.fields_dict.preview_section.$wrapper
+                .find("#btn-execute-migration")
+                .on("click", () => {
+                  frappe.confirm(
+                    __("Ali ste prepričani? Prestavili boste {0} učencev v {1}.", [
+                      p.migrate.length,
+                      values.to_year,
+                    ]),
+                    () => {
+                      frappe.call({
+                        method: "rfid_app.rfid.api.execute_migration",
+                        args: {
+                          from_year: values.from_year,
+                          to_year: values.to_year,
+                          release_rfid_leavers: values.release_rfid || 0,
+                        },
+                        freeze: true,
+                        freeze_message: __("Izvajanje migracije..."),
+                        callback: function (r) {
+                          if (r.message) {
+                            const m = r.message;
+                            frappe.msgprint({
+                              title: __("Migracija končana"),
+                              indicator: m.failed.length > 0 ? "orange" : "green",
+                              message: __("Prestavljenih: {0}<br>Odpisanih: {1}<br>RFID vrnjenih: {2}<br>Napake: {3}", [
+                                m.migrated,
+                                m.leavers,
+                                m.leavers_released,
+                                m.failed.length,
+                              ]),
+                            });
+                            d.hide();
+                            cur_list.refresh();
+                          }
+                        },
+                      });
+                    }
+                  );
+                });
             }
           }
         },
