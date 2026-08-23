@@ -120,12 +120,11 @@ def replace_rfid(ucenec, new_rfid):
     old_rfid_doc.link_ucenec = None
     old_rfid_doc.save(ignore_permissions=True)
 
+    frappe.db.set_value("Ucenci", ucenec, "rfid", new_rfid)
+
     new_rfid_doc.status = "Aktiven"
     new_rfid_doc.link_ucenec = ucenec
     new_rfid_doc.save(ignore_permissions=True)
-
-    ucenec_doc.rfid = new_rfid
-    ucenec_doc.save(ignore_permissions=True)
 
     frappe.db.commit()
 
