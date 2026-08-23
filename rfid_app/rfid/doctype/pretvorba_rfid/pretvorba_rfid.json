@@ -1,0 +1,181 @@
+{
+ "actions": [],
+ "autoname": "naming_by:field:transaction_date",
+ "creation": "2026-08-23 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "transaction_date",
+  "transaction_time",
+  "column_break_dt1",
+  "operator",
+  "student_section",
+  "ucenec",
+  "ucenec_id",
+  "oddelek",
+  "solsko_leto",
+  "rfid_section",
+  "old_rfid",
+  "old_rfid_status",
+  "column_break_rf1",
+  "new_rfid",
+  "new_rfid_status",
+  "reason_section",
+  "reason",
+  "notes_section",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Datum",
+   "reqd": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "transaction_time",
+   "fieldtype": "Time",
+   "hidden": 1
+  },
+  {
+   "fieldname": "column_break_dt1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "__Session User",
+   "fieldname": "operator",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Operater",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_section",
+   "fieldtype": "Section Break",
+   "label": "Učenec"
+  },
+  {
+   "fieldname": "ucenec",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Učenec",
+   "options": "Ucenci",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ucenec.ucenec_id",
+   "fieldname": "ucenec_id",
+   "fieldtype": "Data",
+   "label": "Učenec ID",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ucenec.oddelek",
+   "fieldname": "oddelek",
+   "fieldtype": "Link",
+   "label": "Oddelek",
+   "options": "Oddelek",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "ucenec.solsko_leto",
+   "fieldname": "solsko_leto",
+   "fieldtype": "Link",
+   "label": "Šolsko leto",
+   "options": "Solsko leto",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rfid_section",
+   "fieldtype": "Section Break",
+   "label": "RFID kartici"
+  },
+  {
+   "fieldname": "old_rfid",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Star RFID",
+   "options": "RFID",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Neaktiven",
+   "fieldname": "old_rfid_status",
+   "fieldtype": "Data",
+   "label": "Status starega",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rf1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_rfid",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Nov RFID",
+   "options": "RFID",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Aktiven",
+   "fieldname": "new_rfid_status",
+   "fieldtype": "Data",
+   "label": "Status novega",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reason_section",
+   "fieldtype": "Section Break",
+   "label": "Razlog"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Razlog zamenjave"
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Opombe"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Opombe"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-23 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Rfid",
+ "name": "Pretvorba RFID",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "ucenec",
+ "track_changes": 1
+}

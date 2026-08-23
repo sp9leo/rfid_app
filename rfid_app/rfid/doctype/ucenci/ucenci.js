@@ -103,6 +103,7 @@ function zamenjaj_rfid(frm) {
             args: {
               ucenec: frm.doc.name,
               new_rfid: values.new_rfid,
+              reason: values.reason || "",
             },
             freeze: true,
             freeze_message: __("Zamenjava RFID-ja..."),

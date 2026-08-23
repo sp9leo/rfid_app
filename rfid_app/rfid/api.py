@@ -84,11 +84,11 @@ def remove_rfid(rfid, new_status="Pripravljen"):
 
 
 @frappe.whitelist()
-def replace_rfid(ucenec, new_rfid):
+def replace_rfid(ucenec, new_rfid, reason=None):
     """Atomically replace a student's RFID.
 
     Old RFID → Neaktiven (lost), new RFID → Aktiven.
-    Returns data for both confirmation printouts.
+    Creates a Pretvorba RFID log entry.
     """
     if not frappe.has_permission("RFID", "write") or not frappe.has_permission("Ucenci", "write"):
         frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
@@ -126,6 +126,15 @@ def replace_rfid(ucenec, new_rfid):
     new_rfid_doc.link_ucenec = ucenec
     new_rfid_doc.save(ignore_permissions=True)
 
+    pretvorba = frappe.get_doc({
+        "doctype": "Pretvorba RFID",
+        "ucenec": ucenec,
+        "old_rfid": old_rfid_name,
+        "new_rfid": new_rfid,
+        "reason": reason or "",
+    })
+    pretvorba.insert(ignore_permissions=True)
+
     frappe.db.commit()
 
     return {
@@ -133,6 +142,7 @@ def replace_rfid(ucenec, new_rfid):
         "message": _("RFID zamenjan: {0} → {1}").format(old_rfid_name, new_rfid),
         "old_rfid": old_rfid_name,
         "new_rfid": new_rfid,
+        "pretvorba_name": pretvorba.name,
         "student_name": ucenec_doc.full_name,
         "student_id": ucenec_doc.name,
         "oddelek": ucenec_doc.oddelek,

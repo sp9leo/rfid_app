@@ -136,6 +136,10 @@
   {
    "link_doctype": "RFID",
    "link_fieldname": "link_ucenec"
+  },
+  {
+   "link_doctype": "Pretvorba RFID",
+   "link_fieldname": "ucenec"
   }
  ],
  "modified": "2024-11-09 14:55:39.071922",
