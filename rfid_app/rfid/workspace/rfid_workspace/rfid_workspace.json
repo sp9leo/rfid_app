@@ -1,7 +1,7 @@
 {
  "actions": [],
  "charts": [],
- "content": "[{\"id\":\"rfid_hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Rfid</span>\",\"col\":12}},{\"id\":\"rfid_sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RFID\",\"col\":3}},{\"id\":\"rfid_sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Učenci\",\"col\":3}},{\"id\":\"rfid_sc3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Oddelek\",\"col\":3}},{\"id\":\"rfid_sc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Solsko leto\",\"col\":3}}]",
+ "content": "[{\"id\":\"rfid_hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Rfid Module</span>\",\"col\":12}},{\"id\":\"rfid_sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RFID\",\"col\":3}},{\"id\":\"rfid_sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Učenci\",\"col\":3}},{\"id\":\"rfid_sc3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Oddelek\",\"col\":3}},{\"id\":\"rfid_sc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Solsko leto\",\"col\":3}}]",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -10,11 +10,11 @@
  "icon": "octicon octicon-radio-tower",
  "indicator_color": "green",
  "is_hidden": 0,
- "label": "Rfid_workspace-Administrator",
+ "label": "Rfid Module Workspace",
  "links": [],
  "modified": "2024-11-09 17:08:20.057055",
  "module": "Rfid",
- "name": "Rfid_workspace-Administrator",
+ "name": "Rfid Module Workspace",
  "number_cards": [],
  "parent_page": "",
  "public": 0,
@@ -31,7 +31,7 @@
    "kanban_board": null,
    "label": "RFID",
    "link_to": "RFID",
-   "parent": "Rfid_workspace-Administrator",
+   "parent": "Rfid Module Workspace",
    "parentfield": "shortcuts",
    "parenttype": "Workspace",
    "restrict_to_domain": null,
@@ -47,7 +47,7 @@
    "kanban_board": null,
    "label": "Učenci",
    "link_to": "Ucenci",
-   "parent": "Rfid_workspace-Administrator",
+   "parent": "Rfid Module Workspace",
    "parentfield": "shortcuts",
    "parenttype": "Workspace",
    "restrict_to_domain": null,
@@ -63,7 +63,7 @@
    "kanban_board": null,
    "label": "Oddelek",
    "link_to": "Oddelek",
-   "parent": "Rfid_workspace-Administrator",
+   "parent": "Rfid Module Workspace",
    "parentfield": "shortcuts",
    "parenttype": "Workspace",
    "restrict_to_domain": null,
@@ -79,7 +79,7 @@
    "kanban_board": null,
    "label": "Solsko leto",
    "link_to": "Solsko leto",
-   "parent": "Rfid_workspace-Administrator",
+   "parent": "Rfid Module Workspace",
    "parentfield": "shortcuts",
    "parenttype": "Workspace",
    "restrict_to_domain": null,
@@ -88,5 +88,5 @@
    "url": null
   }
  ],
- "title": "Rfid_workspace"
+ "title": "Rfid Module Workspace"
 }
