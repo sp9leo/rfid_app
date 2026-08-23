@@ -32,6 +32,7 @@
    "description": "Aktiven=V uporabi, Neaktiven=izgubljen, uničen ipd..",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "RFID status",
    "options": "Pripravljen\nAktiven\nNeaktiven"
   },
