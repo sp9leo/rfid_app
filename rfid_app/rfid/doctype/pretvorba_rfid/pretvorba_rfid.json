@@ -1,6 +1,5 @@
 {
  "actions": [],
- "autoname": "naming_by:field:transaction_date",
  "creation": "2026-08-23 10:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -157,7 +156,6 @@
  "modified_by": "Administrator",
  "module": "Rfid",
  "name": "Pretvorba RFID",
- "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
