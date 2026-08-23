@@ -3,11 +3,14 @@
 
 frappe.ui.form.on("Ucenci", {
   izberi_rfid(frm) {
-    const ucenec = frm.doc.name;
+    if (frm.doc.rfid) {
+      frappe.msgprint(__("Ta učenec že ima dodeljen RFID."));
+      return;
+    }
 
     frappe.prompt(
       {
-        label: "Select RFID",
+        label: "Izberi RFID",
         fieldname: "rfid",
         fieldtype: "Link",
         options: "RFID",
@@ -17,46 +20,33 @@ frappe.ui.form.on("Ucenci", {
           return {
             filters: {
               status: "Pripravljen",
-              link_ucenec: "",
             },
           };
         },
       },
       (values) => {
-        const selectedRfid = values.rfid;
-
-        frappe.db
-          .get_doc("RFID", selectedRfid)
-          .then((doc) => {
-            doc.status = "Aktiven";
-            doc.link_ucenec = ucenec;
-
-            frappe.call({
-              method: "frappe.client.save",
-              args: {
-                doc: doc,
-              },
-              callback: function (response) {
-                if (!response.exc) {
-                  frappe.show_alert(
-                    `Učencu ${frm.doc.full_name} dodan RFID ${selectedRfid}`
-                  );
-                  frm.set_value("rfid", selectedRfid);
-                  frm.save();
-                } else {
-                  frappe.warn(
-                    "Prišlo je do napake pri posodabljanju dokumenta."
-                  );
-                }
-              },
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching RFID document:", error);
-            frappe.warn(
-              "Prišlo je do napake pri pridobivanju dokumenta RFID."
-            );
-          });
+        frm.set_intro(__("Dodeljevanje RFID-ja..."), "orange");
+        frappe.call({
+          method: "rfid_app.rfid.api.assign_rfid",
+          args: {
+            ucenec: frm.doc.name,
+            rfid: values.rfid,
+          },
+          freeze: true,
+          freeze_message: __("Dodeljevanje RFID-ja..."),
+          callback: function (r) {
+            if (r.message) {
+              frappe.show_alert({
+                message: r.message.message,
+                indicator: "green",
+              });
+              frm.reload_doc();
+            }
+          },
+          error: function (r) {
+            frm.clear_intro();
+          },
+        });
       }
     );
   },

@@ -7,10 +7,11 @@ app_icon = "fa fa-rss"
 app_email = "info@osaz.si"
 app_license = "MIT"
 
-# Includes
-# ------------------
-
-# fixtures = [
-#     {"doctype": "Workspace", "filters": [["name", "like", "Rfid%"]]},
-#     {"doctype": "Oddelek"}
-# ]
+doc_events = {
+    "RFID": {
+        "on_trash": "rfid_app.rfid.api.on_trash_rfid",
+    },
+    "Ucenci": {
+        "on_trash": "rfid_app.rfid.api.on_trash_ucenec",
+    },
+}

@@ -3,23 +3,8 @@
 
 frappe.ui.form.on("RFID", {
   refresh(frm) {
-    if (!frm.doc.link_ucenec) {
-      frappe.db.get_value("Ucenci", { rfid: frm.doc.name }, "name", (r) => {
-        if (r && r.name) {
-          frm.set_value("link_ucenec", r.name);
-          frm.set_value("status", "Aktiven");
-          frm.save();
-          frappe.show_alert("Ucenec field updated successfully");
-        }
-      });
-    }
-
     if (frm.doc.link_ucenec && frm.doc.status === "Aktiven") {
       frm.set_df_property("status", "read_only", 1);
-    } else if (!frm.doc.link_ucenec && frm.doc.status === "Aktiven") {
-      frappe.throw("Status ne more biti Aktiven če nima dodanega učenca", {
-        title: "Napaka",
-      });
     }
 
     frm.fields_dict["izbrisi_rfid"]
@@ -32,39 +17,55 @@ frappe.ui.form.on("RFID", {
   },
 
   izbrisi_rfid(frm) {
-    const ucenec = frm.doc.link_ucenec;
-    const rfid = frm.doc.name;
+    if (!frm.doc.link_ucenec) {
+      frappe.msgprint(__("Ta RFID ni dodeljen nikomur."));
+      return;
+    }
 
     frappe.db
-      .get_value("Ucenci", { name: ucenec }, ["ime", "priimek"])
+      .get_value("Ucenci", { name: frm.doc.link_ucenec }, ["ime", "priimek"])
       .then((r) => {
         const values = r.message;
-        const ucenecname = values.ime + " " + values.priimek;
+        const ucenecname = (values.ime || "") + " " + (values.priimek || "");
 
-        frappe.warn(
-          "Are you sure you want to proceed?",
-          `Osebi ${ucenecname} bo odstranjen RFID z UUID ${rfid}`,
-          () => {
+        frappe.prompt(
+          [
+            {
+              label: "Novi status",
+              fieldname: "new_status",
+              fieldtype: "Select",
+              options: "Pripravljen\nNeaktiven",
+              default: "Pripravljen",
+              reqd: 1,
+              description:
+                "Pripravljen = RFID bo ponovno na voljo. Neaktiven = RFID označen kot izgubljen/uničen.",
+            },
+          ],
+          (values) => {
+            frm.set_intro(__("Odstranjevanje RFID-ja..."), "orange");
             frappe.call({
-              method: "frappe.client.set_value",
+              method: "rfid_app.rfid.api.remove_rfid",
               args: {
-                doctype: "Ucenci",
-                name: ucenec,
-                fieldname: "rfid",
-                value: null,
+                rfid: frm.doc.name,
+                new_status: values.new_status,
               },
-              callback: function (response) {
-                if (!response.exc) {
-                  frappe.show_alert(`${ucenec} updated successfully`);
-                  frm.set_value("status", "Pripravljen");
-                  frm.set_value("link_ucenec", null);
-                  frm.set_df_property("status", "read_only", 0);
-                  frappe.show_alert("Status field unlocked");
-                  frm.save();
+              freeze: true,
+              freeze_message: __("Odstranjevanje RFID-ja..."),
+              callback: function (r) {
+                if (r.message) {
+                  frappe.show_alert({
+                    message: r.message.message,
+                    indicator: "green",
+                  });
+                  frm.reload_doc();
                 }
+              },
+              error: function (r) {
+                frm.clear_intro();
               },
             });
           },
+          __("Odstrani RFID učencu {0}?", [ucenecname.trim()]),
           "Nadaljuj"
         );
       });
