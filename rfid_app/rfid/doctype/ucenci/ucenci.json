@@ -22,7 +22,9 @@
   "kosilo",
   "column_break_zzoc",
   "vozac",
-  "dieta"
+  "dieta",
+  "section_break_pozn",
+  "pozabljen_rfid_html"
  ],
  "fields": [
   {
@@ -129,6 +131,17 @@
    "no_copy": 1,
    "permlevel": 1,
    "unique": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_pozn",
+   "fieldtype": "Section Break",
+   "label": "Pozabljen RFID"
+  },
+  {
+   "fieldname": "pozabljen_rfid_html",
+   "fieldtype": "HTML",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -139,6 +152,10 @@
   },
   {
    "link_doctype": "Pretvorba RFID",
+   "link_fieldname": "ucenec"
+  },
+  {
+   "link_doctype": "Pozabljen RFID",
    "link_fieldname": "ucenec"
   }
  ],

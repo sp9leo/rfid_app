@@ -231,6 +231,26 @@ def _get_forgot_rfid_entries(log_date):
     return data
 
 
+@frappe.whitelist()
+def get_forgot_rfid_for_ucenec(ucenec):
+    """Return one student's forgotten-RFID entries (newest first)."""
+    if not frappe.has_permission("Pozabljen RFID", "read"):
+        frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
+
+    entries = frappe.get_all(
+        "Pozabljen RFID",
+        filters={"ucenec": ucenec},
+        fields=["name", "ucenec", "datum", "storitev", "creation"],
+        order_by="datum desc, creation desc",
+    )
+    for e in entries:
+        e["datum_label"] = (
+            frappe.utils.format_date(e["datum"], "dd. MM. yyyy") if e["datum"] else ""
+        )
+        e["time"] = frappe.utils.format_time(e["creation"]) if e["creation"] else ""
+    return entries
+
+
 def on_trash_rfid(doc, method):
     """Release linked student when RFID is deleted."""
     if doc.link_ucenec:

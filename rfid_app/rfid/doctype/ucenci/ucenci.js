@@ -7,6 +7,9 @@ frappe.ui.form.on("Ucenci", {
     if (frm.doc.rfid) {
       frm.page.set_indicator(__('RFID dodeljen'), 'green');
     }
+    if (!frm.is_new()) {
+      load_forgot_rfid(frm);
+    }
   },
 
   izberi_rfid(frm) {
@@ -190,4 +193,35 @@ function print_native(data, print_format) {
     }, 5000);
   }
   frappe.set_route("print", "Pretvorba RFID", data.pretvorba_name);
+}
+
+
+function load_forgot_rfid(frm) {
+  frappe.call({
+    method: "rfid_app.rfid.api.get_forgot_rfid_for_ucenec",
+    args: { ucenec: frm.doc.name },
+    callback: function (r) {
+      if (!r.message) return;
+      const rows = r.message;
+      const wrapper = frm.get_field("pozabljen_rfid_html").$wrapper;
+      let html = "";
+      if (!rows.length) {
+        html = `<div class="text-muted small">${__(
+          "Ni zabeležene pozabljene kartice."
+        )}</div>`;
+      } else {
+        html = `<table class="table table-sm table-bordered table-hover" style="margin:0;">
+          <thead>
+            <tr><th>${__("Datum")}</th><th>${__("Ura")}</th><th>${__("Obrok")}</th></tr>
+          </thead>
+          <tbody>${rows
+            .map(
+              (e) =>
+                `<tr><td>${e.datum_label}</td><td>${e.time || ""}</td><td>${e.storitev}</td></tr>`
+            )
+            .join("")}</tbody></table>`;
+      }
+      wrapper.html(html);
+    },
+  });
 }
