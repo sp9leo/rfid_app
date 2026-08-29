@@ -1,7 +1,7 @@
 // Copyright (c) 2024, osaz and contributors
 // For license information, please see license.txt
 
-frappe.listview_settings["Obroki"] = {
+frappe.listview_settings["Pozabljen RFID"] = {
   onload(listview) {
     listview.page.add_menu_item(__("Pozabljena kartica"), () => {
       show_forgot_rfid_dialog(listview);
@@ -13,6 +13,13 @@ function show_forgot_rfid_dialog(listview) {
   const d = new frappe.ui.Dialog({
     title: __("Zabeleži učenca brez kartice"),
     fields: [
+      {
+        label: "Datum",
+        fieldname: "datum",
+        fieldtype: "Date",
+        default: frappe.datetime.get_today(),
+        reqd: 1,
+      },
       {
         label: "Učenec",
         fieldname: "ucenec",
@@ -34,7 +41,7 @@ function show_forgot_rfid_dialog(listview) {
     ],
     primary_action_label: __("Zabeleži"),
     primary_action(values) {
-      if (!values.ucenec) {
+      if (!values.ucenec || !values.datum) {
         return;
       }
       frappe.call({
@@ -42,6 +49,7 @@ function show_forgot_rfid_dialog(listview) {
         args: {
           ucenec: values.ucenec,
           storitev: values.storitev || "Kosilo",
+          datum: values.datum,
         },
         freeze: true,
         freeze_message: __("Zapisovanje..."),

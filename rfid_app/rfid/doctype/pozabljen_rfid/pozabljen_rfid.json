@@ -1,60 +1,60 @@
 {
  "actions": [],
- "autoname": "format:{YY}-{####}",
- "creation": "2024-07-28 12:06:53.791738",
+ "creation": "2026-08-29 10:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "datum",
   "storitev",
-  "status",
+  "column_break_dt1",
   "ucenec",
   "oddelek"
  ],
  "fields": [
   {
-   "fieldname": "storitev",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Storitev",
-   "options": "Zajtrk\nMalica\nKosilo"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "Prevzeto\nNeprevzeto\nOdjava\nBrez kartice"
-  },
-  {
+   "default": "Today",
    "fieldname": "datum",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Datum"
+   "label": "Datum",
+   "reqd": 1
+  },
+  {
+   "default": "Kosilo",
+   "fieldname": "storitev",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Obrok",
+   "options": "Zajtrk\nMalica\nKosilo"
+  },
+  {
+   "fieldname": "column_break_dt1",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "ucenec",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Ucenec",
+   "label": "Učenec",
    "options": "Ucenci",
-   "search_index": 1
+   "reqd": 1
   },
   {
    "fetch_from": "ucenec.oddelek",
    "fieldname": "oddelek",
-   "fieldtype": "Read Only",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Oddelek"
+   "label": "Oddelek",
+   "options": "Oddelek",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 16:57:35.849450",
+ "modified": "2026-08-29 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Rfid",
- "name": "Obroki",
- "naming_rule": "Expression",
+ "name": "Pozabljen RFID",
  "owner": "Administrator",
  "permissions": [
   {
@@ -84,5 +84,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "ucenec",
+ "track_changes": 1
 }

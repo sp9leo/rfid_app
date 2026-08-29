@@ -153,22 +153,22 @@ def replace_rfid(ucenec, new_rfid, reason=None):
 
 
 @frappe.whitelist()
-def log_forgot_rfid(ucenec, storitev="Kosilo"):
+def log_forgot_rfid(ucenec, storitev="Kosilo", datum=None):
     """Log that a student came to the kitchen without their RFID card.
 
-    Creates an Obroki entry with status "Brez kartice" so it shows up on the
-    kitchen screen alongside normal scans. One entry per student per day.
+    Creates a Pozabljen RFID entry so it shows up on the kitchen monitor.
+    One entry per student per day.
     """
-    if not frappe.has_permission("Obroki", "create"):
+    if not frappe.has_permission("Pozabljen RFID", "create"):
         frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
 
     if storitev not in ("Zajtrk", "Malica", "Kosilo"):
         storitev = "Kosilo"
 
+    log_date = datum or frappe.utils.today()
     ucenec_doc = frappe.get_doc("Ucenci", ucenec)
-    today = frappe.utils.today()
 
-    existing = frappe.db.exists("Obroki", {"ucenec": ucenec, "datum": today})
+    existing = frappe.db.exists("Pozabljen RFID", {"ucenec": ucenec, "datum": log_date})
     if existing:
         return {
             "status": "exists",
@@ -179,11 +179,10 @@ def log_forgot_rfid(ucenec, storitev="Kosilo"):
         }
 
     doc = frappe.get_doc({
-        "doctype": "Obroki",
+        "doctype": "Pozabljen RFID",
         "ucenec": ucenec,
-        "datum": today,
+        "datum": log_date,
         "storitev": storitev,
-        "status": "Brez kartice",
         "oddelek": ucenec_doc.oddelek or "",
     })
     doc.insert(ignore_permissions=True)
@@ -199,7 +198,37 @@ def log_forgot_rfid(ucenec, storitev="Kosilo"):
         "full_name": ucenec_doc.full_name,
         "oddelek": ucenec_doc.oddelek,
         "storitev": storitev,
+        "datum": str(log_date),
     }
+
+
+@frappe.whitelist()
+def get_forgot_rfid_today():
+    """List today's forgotten-RFID entries for the kitchen portal."""
+    return _get_forgot_rfid_entries(frappe.utils.today())
+
+
+def _get_forgot_rfid_entries(log_date):
+    """Return forgotten-RFID entries for a date with student details."""
+    data = frappe.get_all(
+        "Pozabljen RFID",
+        filters={"datum": log_date},
+        fields=["name", "ucenec", "datum", "storitev", "creation"],
+        order_by="creation asc",
+    )
+    ucenec_names = {d["ucenec"] for d in data}
+    students = {}
+    for name in ucenec_names:
+        students[name] = frappe.db.get_value(
+            "Ucenci", name, ["full_name", "oddelek"], as_dict=True
+        ) or {}
+
+    for d in data:
+        student = students.get(d["ucenec"], {})
+        d["full_name"] = student.get("full_name") or d["ucenec"]
+        d["oddelek"] = student.get("oddelek") or ""
+        d["time"] = frappe.utils.format_time(d["creation"]) if d["creation"] else ""
+    return data
 
 
 def on_trash_rfid(doc, method):

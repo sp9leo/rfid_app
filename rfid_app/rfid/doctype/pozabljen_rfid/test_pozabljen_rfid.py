@@ -5,12 +5,12 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestObroki(FrappeTestCase):
-	def test_create_entry(self):
+class TestPozabljenRFID(FrappeTestCase):
+	def test_create_entry_with_default_date(self):
 		doc = frappe.get_doc({
-			"doctype": "Obroki",
+			"doctype": "Pozabljen RFID",
 			"datum": frappe.utils.today(),
 			"storitev": "Kosilo",
-			"status": "Prevzeto",
 		}).insert(ignore_permissions=True, ignore_mandatory=True)
 		self.assertTrue(doc.name)
+		self.assertEqual(frappe.db.get_value("Pozabljen RFID", doc.name, "datum"), frappe.utils.today())

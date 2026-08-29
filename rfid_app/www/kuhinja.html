@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="cache-control" content="no-cache, no-store">
+	<meta http-equiv="refresh" content="30">
+	<title>{{ title }}</title>
+	<style>
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			background: #f4f6f8;
+			color: #212529;
+		}
+		header {
+			background: #1b2a41;
+			color: #fff;
+			padding: 16px 24px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+		header .meta { color: #c8d2e0; font-size: 14px; }
+		main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+		.badge {
+			display: inline-block;
+			background: #e63946;
+			color: #fff;
+			border-radius: 999px;
+			padding: 2px 10px;
+			font-size: 13px;
+			font-weight: 700;
+			margin-left: 8px;
+			vertical-align: middle;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			background: #fff;
+			box-shadow: 0 1px 3px rgba(0,0,0,.12);
+		}
+		th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e6e9ee; }
+		th { background: #eef1f5; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+		td { font-size: 16px; }
+		tr:last-child td { border-bottom: none; }
+		.empty { text-align: center; color: #6c757d; padding: 40px 0 !important; font-size: 16px; }
+		.sticky th { position: sticky; top: 0; }
+		.autorefresh-note { color: #6c757d; font-size: 12px; margin-top: 8px; text-align: right; }
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Pozabljena kartica</h1>
+		<div class="meta">
+			{{ frappe.utils.format_date(today, "dd. MM. yyyy") }}
+			&nbsp;•&nbsp; Skupaj danes: <span id="forgot-count">{{ entries|length }}</span>
+		</div>
+	</header>
+
+	<main>
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Ura</th>
+					<th>Učenec</th>
+					<th>Oddelek</th>
+					<th>Obrok</th>
+				</tr>
+			</thead>
+			<tbody id="forgot-body">
+				{% if entries %}
+					{% for e in entries %}
+					<tr>
+						<td>{{ loop.index }}</td>
+						<td>{{ e.time }}</td>
+						<td>{{ frappe.utils.escape_html(e.full_name) }}</td>
+						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
+						<td>{{ frappe.utils.escape_html(e.storitev) }}</td>
+					</tr>
+					{% endfor %}
+				{% else %}
+					<tr><td colspan="5" class="empty">Ni vnosov.</td></tr>
+				{% endif %}
+			</tbody>
+		</table>
+		<div class="autorefresh-note">Samodejno osveževanje vsakih 15 s.</div>
+	</main>
+
+	<script>
+		function render(items) {
+			const tbody = document.getElementById("forgot-body");
+			const count = document.getElementById("forgot-count");
+			count.textContent = String(items.length);
+			if (!items.length) {
+				const tr = document.createElement("tr");
+				const td = document.createElement("td");
+				td.colSpan = 5;
+				td.className = "empty";
+				td.textContent = "Ni vnosov.";
+				tr.appendChild(td);
+				tbody.replaceChildren(tr);
+				return;
+			}
+			const rows = items.map((e, i) => {
+				const tr = document.createElement("tr");
+				[e.time, e.full_name, e.oddelek, e.storitev].forEach((txt, ci) => {
+					const td = document.createElement("td");
+					if (ci === 0) td.textContent = String(i + 1);
+					else td.textContent = txt || "";
+					tr.appendChild(td);
+				});
+				return tr;
+			});
+			tbody.replaceChildren(...rows);
+		}
+
+		async function refresh() {
+			try {
+				const resp = await fetch(
+					"/api/method/rfid_app.rfid.api.get_forgot_rfid_today",
+					{ credentials: "same-origin" }
+				);
+				const data = await resp.json();
+				render(data && data.message ? data.message : []);
+			} catch (e) {
+				// keep last rendered list on transient errors
+			}
+		}
+
+		refresh();
+		setInterval(refresh, 15000);
+	</script>
+</body>
+</html>
