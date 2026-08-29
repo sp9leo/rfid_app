@@ -45,7 +45,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "__Session User",
    "fieldname": "operator",
    "fieldtype": "Data",
    "in_list_view": 1,

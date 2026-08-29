@@ -6,4 +6,6 @@ from frappe.model.document import Document
 
 
 class PretvorbaRFID(Document):
-    pass
+    def validate(self):
+        if not self.operator:
+            self.operator = frappe.utils.get_fullname(frappe.session.user) or frappe.session.user
