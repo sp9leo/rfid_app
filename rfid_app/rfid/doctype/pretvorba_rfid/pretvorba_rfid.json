@@ -8,6 +8,7 @@
   "transaction_time",
   "column_break_dt1",
   "operator",
+  "school_name",
   "student_section",
   "ucenec",
   "ucenec_id",
@@ -49,6 +50,12 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Operater",
+   "read_only": 1
+  },
+  {
+   "fieldname": "school_name",
+   "fieldtype": "Data",
+   "label": "Šola",
    "read_only": 1
   },
   {

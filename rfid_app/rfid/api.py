@@ -132,6 +132,7 @@ def replace_rfid(ucenec, new_rfid, reason=None):
         "old_rfid": old_rfid_name,
         "new_rfid": new_rfid,
         "reason": reason or "",
+        "school_name": frappe.defaults.get_global_default("school_name") or "",
     })
     pretvorba.insert(ignore_permissions=True)
 

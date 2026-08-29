@@ -114,7 +114,7 @@ function zamenjaj_rfid(frm) {
                   indicator: "green",
                 });
                 frm.reload_doc();
-                show_print_dialog(frm, r.message, values.reason || "");
+                show_print_dialog(frm, r.message);
               }
             },
           });
@@ -134,7 +134,7 @@ function zamenjaj_rfid(frm) {
 }
 
 
-function show_print_dialog(frm, data, reason) {
+function show_print_dialog(frm, data) {
   const d = new frappe.ui.Dialog({
     title: __("Natisni potrdila"),
     size: "large",
@@ -169,128 +169,31 @@ function show_print_dialog(frm, data, reason) {
   d.fields_dict.print_html.$wrapper
     .find("#btn-print-lost")
     .on("click", () => {
-      print_lost_confirmation(data, reason);
+      print_native(data, "Izjava o izgubi RFID");
     });
 
   d.fields_dict.print_html.$wrapper
     .find("#btn-print-new")
     .on("click", () => {
-      print_new_confirmation(data);
+      print_native(data, "Potrdilo o novem RFID");
     });
 }
 
 
-function print_lost_confirmation(data, reason) {
-  const today = frappe.datetime.str_to_user(frappe.datetime.get_today());
-  const school = frappe.sys_defaults.school_name || frappe.defaults.get_default("school_name") || "";
-
-  const html = `<!DOCTYPE html>
-<html><head>
-  <meta charset="utf-8">
-  <title>${__("Izjava o izgubi RFID")}</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-    .header { text-align: center; margin-bottom: 30px; }
-    .header h2 { margin-bottom: 5px; }
-    .header p { color: #666; }
-    .field { margin: 12px 0; }
-    .field b { display: inline-block; width: 180px; }
-    .signature { margin-top: 60px; display: flex; justify-content: space-between; }
-    .signature-box { text-align: center; width: 200px; border-top: 1px solid #333; padding-top: 5px; }
-    @media print { body { padding: 20px; } }
-  </style>
-</head><body>
-  <div class="header">
-    <h2>${__("Izjava o izgubi RFID identifikacijske kartice")}</h2>
-    <p>${school}</p>
-  </div>
-
-  <div class="field"><b>${__("Datum")}:</b> ${today}</div>
-  <div class="field"><b>${__("Učenec")}:</b> ${data.student_name}</div>
-  <div class="field"><b>${__("Učenec ID")}:</b> ${data.ucenec_id}</div>
-  <div class="field"><b>${__("Oddelek")}:</b> ${data.oddelek || "-"}</div>
-  <div class="field"><b>${__("Izgubljeni RFID")}:</b> <code>${data.old_rfid}</code></div>
-  ${reason ? `<div class="field"><b>${__("Razlog")}:</b> ${reason}</div>` : ""}
-
-  <p style="margin-top:30px;">
-    ${__("S podpisom potrdim, da je zgornji RFID identifikacijski kartici bil izgubljen / poškodovan / ukraden in ga ne uporabljam več.")}
-  </p>
-
-  <div class="signature">
-    <div class="signature-box">${__("Podpis učenca / starša")}</div>
-    <div class="signature-box">${__("Podpis šole")}</div>
-  </div>
-
-  <script>
-    window.onload = function() { window.print(); }
-  </script>
-</body></html>`;
-
-  open_print_window(html);
-}
-
-
-function print_new_confirmation(data) {
-  const today = frappe.datetime.str_to_user(frappe.datetime.get_today());
-  const school = frappe.sys_defaults.school_name || frappe.defaults.get_default("school_name") || "";
-
-  const html = `<!DOCTYPE html>
-<html><head>
-  <meta charset="utf-8">
-  <title>${__("Potrdilo o novem RFID")}</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-    .header { text-align: center; margin-bottom: 30px; }
-    .header h2 { margin-bottom: 5px; }
-    .header p { color: #666; }
-    .field { margin: 12px 0; }
-    .field b { display: inline-block; width: 180px; }
-    .rfid-box { background: #f0f7ff; border: 2px solid #4a90d9; border-radius: 8px; padding: 15px 25px; text-align: center; margin: 25px 0; }
-    .rfid-box code { font-size: 1.3em; font-weight: bold; color: #2c5f9e; }
-    .signature { margin-top: 60px; display: flex; justify-content: space-between; }
-    .signature-box { text-align: center; width: 200px; border-top: 1px solid #333; padding-top: 5px; }
-    @media print { body { padding: 20px; } }
-  </style>
-</head><body>
-  <div class="header">
-    <h2>${__("Potrdilo o dodelitvi RFID identifikacijske kartice")}</h2>
-    <p>${school}</p>
-  </div>
-
-  <div class="field"><b>${__("Datum")}:</b> ${today}</div>
-  <div class="field"><b>${__("Učenec")}:</b> ${data.student_name}</div>
-  <div class="field"><b>${__("Učenec ID")}:</b> ${data.ucenec_id}</div>
-  <div class="field"><b>${__("Oddelek")}:</b> ${data.oddelek || "-"}</div>
-
-  <div class="rfid-box">
-    <div>${__("Vaš novi RFID")}</div>
-    <code>${data.new_rfid}</code>
-  </div>
-
-  <p>
-    ${__("S podpisom potrdim prevzem nove RFID identifikacijske kartice. Zavezujem se, da jo bom skrbno hranil in uporabljal v skladu s pravili šole.")}
-  </p>
-
-  <div class="signature">
-    <div class="signature-box">${__("Podpis učenca / starša")}</div>
-    <div class="signature-box">${__("Podpis šole")}</div>
-  </div>
-
-  <script>
-    window.onload = function() { window.print(); }
-  </script>
-</body></html>`;
-
-  open_print_window(html);
-}
-
-
-function open_print_window(html) {
-  const win = window.open("", "_blank", "width=800,height=600");
-  if (win) {
-    win.document.write(html);
-    win.document.close();
-  } else {
-    frappe.msgprint(__("Onemogočeno odpiranje okna za tiskanje. Dovolite pojavna okna za to stran."));
+function print_native(data, print_format) {
+  const url = frappe.urllib.get_full_url(
+    "/printview?doctype=" +
+      encodeURIComponent("Pretvorba RFID") +
+      "&name=" +
+      encodeURIComponent(data.pretvorba_name) +
+      "&format=" +
+      encodeURIComponent(print_format) +
+      "&no_letterhead=1&trigger_print=1"
+  );
+  const win = window.open(url, "_blank");
+  if (!win) {
+    frappe.msgprint(
+      __("Onemogočeno odpiranje okna za tiskanje. Dovolite pojavna okna za to stran.")
+    );
   }
 }
