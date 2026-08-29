@@ -17,25 +17,27 @@
 		header {
 			background: #1b2a41;
 			color: #fff;
-			padding: 16px 24px;
+			padding: 12px 24px;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
+			gap: 16px;
 		}
 		header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+		.header-right { display: flex; align-items: center; gap: 16px; }
 		header .meta { color: #c8d2e0; font-size: 14px; }
-		main { padding: 24px; max-width: 1100px; margin: 0 auto; }
-		.badge {
-			display: inline-block;
-			background: #e63946;
-			color: #fff;
-			border-radius: 999px;
-			padding: 2px 10px;
-			font-size: 13px;
-			font-weight: 700;
-			margin-left: 8px;
-			vertical-align: middle;
+		.print-btn {
+			background: #fff;
+			color: #1b2a41;
+			border: none;
+			border-radius: 6px;
+			padding: 8px 14px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
 		}
+		.print-btn:hover { background: #e8edf3; }
+		main { padding: 24px; max-width: 1100px; margin: 0 auto; }
 		table {
 			width: 100%;
 			border-collapse: collapse;
@@ -45,18 +47,31 @@
 		th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e6e9ee; }
 		th { background: #eef1f5; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
 		td { font-size: 16px; }
+		th:first-child, td:first-child { white-space: nowrap; }
 		tr:last-child td { border-bottom: none; }
 		.empty { text-align: center; color: #6c757d; padding: 40px 0 !important; font-size: 16px; }
-		.sticky th { position: sticky; top: 0; }
 		.autorefresh-note { color: #6c757d; font-size: 12px; margin-top: 8px; text-align: right; }
+
+		@media print {
+			body { background: #fff; }
+			header { background: #fff; color: #000; padding: 0 0 12px 0; }
+			header .meta { color: #333; }
+			.no-print, .autorefresh-note { display: none !important; }
+			main { padding: 0; max-width: none; }
+			table { box-shadow: none; }
+			th { background: #fff; }
+		}
 	</style>
 </head>
 <body>
 	<header>
 		<h1>Pozabljena kartica</h1>
-		<div class="meta">
-			{{ frappe.utils.format_date(today, "dd. MM. yyyy") }}
-			&nbsp;•&nbsp; Skupaj danes: <span id="forgot-count">{{ entries|length }}</span>
+		<div class="header-right">
+			<span class="meta">
+				{{ frappe.utils.format_date(today, "dd. MM. yyyy") }}
+				&nbsp;•&nbsp; Skupaj danes: <span id="forgot-count">{{ entries|length }}</span>
+			</span>
+			<button type="button" class="print-btn no-print" onclick="window.print()">Natisni seznam</button>
 		</div>
 	</header>
 
@@ -64,7 +79,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>#</th>
+					<th>Datum</th>
 					<th>Ura</th>
 					<th>Učenec</th>
 					<th>Oddelek</th>
@@ -75,7 +90,7 @@
 				{% if entries %}
 					{% for e in entries %}
 					<tr>
-						<td>{{ loop.index }}</td>
+						<td>{{ frappe.utils.format_date(e.datum, "dd. MM. yyyy") }}</td>
 						<td>{{ e.time }}</td>
 						<td>{{ frappe.utils.escape_html(e.full_name) }}</td>
 						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
@@ -91,10 +106,26 @@
 	</main>
 
 	<script>
+		function formatDate(s) {
+			if (!s) return "";
+			const parts = String(s).split("-");
+			if (parts.length !== 3) return s;
+			return parts[2] + ". " + parts[1] + ". " + parts[0];
+		}
+
+		function rowCell(text) {
+			const td = document.createElement("td");
+			td.textContent = text || "";
+			return td;
+		}
+
 		function render(items) {
 			const tbody = document.getElementById("forgot-body");
 			const count = document.getElementById("forgot-count");
 			count.textContent = String(items.length);
+
+			tbody.replaceChildren();
+
 			if (!items.length) {
 				const tr = document.createElement("tr");
 				const td = document.createElement("td");
@@ -102,20 +133,19 @@
 				td.className = "empty";
 				td.textContent = "Ni vnosov.";
 				tr.appendChild(td);
-				tbody.replaceChildren(tr);
+				tbody.appendChild(tr);
 				return;
 			}
-			const rows = items.map((e, i) => {
+
+			items.forEach((e) => {
 				const tr = document.createElement("tr");
-				[e.time, e.full_name, e.oddelek, e.storitev].forEach((txt, ci) => {
-					const td = document.createElement("td");
-					if (ci === 0) td.textContent = String(i + 1);
-					else td.textContent = txt || "";
-					tr.appendChild(td);
-				});
-				return tr;
+				tr.appendChild(rowCell(formatDate(e.datum)));
+				tr.appendChild(rowCell(e.time));
+				tr.appendChild(rowCell(e.full_name));
+				tr.appendChild(rowCell(e.oddelek));
+				tr.appendChild(rowCell(e.storitev));
+				tbody.appendChild(tr);
 			});
-			tbody.replaceChildren(...rows);
 		}
 
 		async function refresh() {
