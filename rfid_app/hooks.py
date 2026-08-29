@@ -15,7 +15,3 @@ doc_events = {
         "on_trash": "rfid_app.rfid.api.on_trash_ucenec",
     },
 }
-
-doctype_list_js = {
-    "Obroki": "public/js/obroki_list.js",
-}
