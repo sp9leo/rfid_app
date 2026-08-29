@@ -21,19 +21,13 @@ frappe.ui.form.on("Pretvorba RFID", {
 
 
 function print_native(frm, print_format) {
-  const url = frappe.urllib.get_full_url(
-    "/printview?doctype=" +
-      encodeURIComponent("Pretvorba RFID") +
-      "&name=" +
-      encodeURIComponent(frm.doc.name) +
-"&format=" +
-        encodeURIComponent(print_format) +
-        "&no_letterhead=1"
-  );
-  const win = window.open(url, "_blank");
-  if (!win) {
-    frappe.msgprint(
-      __("Onemogočeno odpiranje okna za tiskanje. Dovolite pojavna okna za to stran.")
-    );
+  const meta = frappe.get_meta(frm.doctype);
+  if (meta) {
+    const prev = meta.default_print_format;
+    meta.default_print_format = print_format;
+    setTimeout(() => {
+      meta.default_print_format = prev;
+    }, 5000);
   }
+  frm.print_doc();
 }

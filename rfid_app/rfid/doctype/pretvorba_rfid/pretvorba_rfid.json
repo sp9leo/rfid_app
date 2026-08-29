@@ -1,6 +1,7 @@
 {
  "actions": [],
  "creation": "2026-08-23 10:00:00.000000",
+ "default_print_format": "Potrdilo o novem RFID",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [

@@ -181,19 +181,13 @@ function show_print_dialog(frm, data) {
 
 
 function print_native(data, print_format) {
-  const url = frappe.urllib.get_full_url(
-    "/printview?doctype=" +
-      encodeURIComponent("Pretvorba RFID") +
-      "&name=" +
-      encodeURIComponent(data.pretvorba_name) +
-"&format=" +
-        encodeURIComponent(print_format) +
-        "&no_letterhead=1"
-  );
-  const win = window.open(url, "_blank");
-  if (!win) {
-    frappe.msgprint(
-      __("Onemogočeno odpiranje okna za tiskanje. Dovolite pojavna okna za to stran.")
-    );
+  const meta = frappe.get_meta("Pretvorba RFID");
+  if (meta) {
+    const prev = meta.default_print_format;
+    meta.default_print_format = print_format;
+    setTimeout(() => {
+      meta.default_print_format = prev;
+    }, 5000);
   }
+  frappe.set_route("print", "Pretvorba RFID", data.pretvorba_name);
 }
