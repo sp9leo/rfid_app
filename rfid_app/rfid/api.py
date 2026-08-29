@@ -152,6 +152,56 @@ def replace_rfid(ucenec, new_rfid, reason=None):
     }
 
 
+@frappe.whitelist()
+def log_forgot_rfid(ucenec, storitev="Kosilo"):
+    """Log that a student came to the kitchen without their RFID card.
+
+    Creates an Obroki entry with status "Brez kartice" so it shows up on the
+    kitchen screen alongside normal scans. One entry per student per day.
+    """
+    if not frappe.has_permission("Obroki", "create"):
+        frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
+
+    if storitev not in ("Zajtrk", "Malica", "Kosilo"):
+        storitev = "Kosilo"
+
+    ucenec_doc = frappe.get_doc("Ucenci", ucenec)
+    today = frappe.utils.today()
+
+    existing = frappe.db.exists("Obroki", {"ucenec": ucenec, "datum": today})
+    if existing:
+        return {
+            "status": "exists",
+            "name": existing,
+            "message": _("Učenec {0} je danes že zabeležen ({1})").format(
+                ucenec_doc.full_name or ucenec, existing
+            ),
+        }
+
+    doc = frappe.get_doc({
+        "doctype": "Obroki",
+        "ucenec": ucenec,
+        "datum": today,
+        "storitev": storitev,
+        "status": "Brez kartice",
+        "oddelek": ucenec_doc.oddelek or "",
+    })
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+    return {
+        "status": "ok",
+        "name": doc.name,
+        "message": _("Zabeležen: {0} — prišel brez kartice ({1})").format(
+            ucenec_doc.full_name or ucenec, doc.name
+        ),
+        "ucenec": ucenec,
+        "full_name": ucenec_doc.full_name,
+        "oddelek": ucenec_doc.oddelek,
+        "storitev": storitev,
+    }
+
+
 def on_trash_rfid(doc, method):
     """Release linked student when RFID is deleted."""
     if doc.link_ucenec:
