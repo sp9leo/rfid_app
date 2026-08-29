@@ -26,9 +26,9 @@ function print_native(frm, print_format) {
       encodeURIComponent("Pretvorba RFID") +
       "&name=" +
       encodeURIComponent(frm.doc.name) +
-      "&format=" +
-      encodeURIComponent(print_format) +
-      "&no_letterhead=1&trigger_print=1"
+"&format=" +
+        encodeURIComponent(print_format) +
+        "&no_letterhead=1"
   );
   const win = window.open(url, "_blank");
   if (!win) {
