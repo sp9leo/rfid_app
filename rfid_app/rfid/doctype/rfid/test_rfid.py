@@ -152,6 +152,26 @@ class TestAssignRemove(FrappeTestCase):
 
 		self.assertRaises(frappe.ValidationError, reactivate_rfid, self.rfid.name)
 
+	def test_remove_clears_oddelek(self):
+		from rfid_app.rfid.api import assign_rfid, remove_rfid
+
+		oddelek = frappe.get_doc({
+			"doctype": "Oddelek",
+			"razred": "1",
+			"oddelek": "A",
+		}).insert(ignore_permissions=True)
+
+		self.ucenec.oddelek = oddelek.name
+		self.ucenec.save(ignore_permissions=True)
+
+		assign_rfid(self.ucenec.name, self.rfid.name)
+		self.rfid.reload()
+		self.assertEqual(self.rfid.oddelek, oddelek.name)
+
+		remove_rfid(self.rfid.name, "Pripravljen")
+		self.rfid.reload()
+		self.assertIsNone(self.rfid.oddelek)
+
 	def test_on_trash_ucenec_releases_rfid(self):
 		from rfid_app.rfid.api import assign_rfid
 

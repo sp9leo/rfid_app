@@ -32,6 +32,7 @@ def assign_rfid(ucenec, rfid):
 
     rfid_doc.status = "Aktiven"
     rfid_doc.link_ucenec = ucenec
+    rfid_doc.oddelek = ucenec_doc.oddelek
     rfid_doc.save(ignore_permissions=True)
 
     ucenec_doc.rfid = rfid
@@ -157,6 +158,7 @@ def replace_rfid(ucenec, new_rfid, reason=None):
 
     new_rfid_doc.status = "Aktiven"
     new_rfid_doc.link_ucenec = ucenec
+    new_rfid_doc.oddelek = ucenec_doc.oddelek
     new_rfid_doc.save(ignore_permissions=True)
 
     pretvorba = frappe.get_doc({
@@ -296,7 +298,7 @@ def on_trash_ucenec(doc, method):
         frappe.db.set_value(
             "RFID",
             doc.rfid,
-            {"status": "Pripravljen", "link_ucenec": None},
+            {"status": "Pripravljen", "link_ucenec": None, "oddelek": None},
         )
 
 
@@ -322,7 +324,9 @@ def repair_inconsistencies():
         fields=["name"],
     )
     for r in active_no_link:
-        frappe.db.set_value("RFID", r.name, "status", "Pripravljen")
+        frappe.db.set_value(
+            "RFID", r.name, {"status": "Pripravljen", "oddelek": None}
+        )
         fixes.append({"type": "reset_status_no_link", "rfid": r.name})
 
     linked_ucenci = frappe.get_all(
@@ -477,7 +481,7 @@ def execute_migration(from_year, to_year, release_rfid_leavers=0):
                     frappe.db.set_value(
                         "RFID",
                         leaver["rfid"],
-                        {"status": "Pripravljen", "link_ucenec": None},
+                        {"status": "Pripravljen", "link_ucenec": None, "oddelek": None},
                     )
                     frappe.db.set_value("Ucenci", leaver["name"], "rfid", None)
                     leavers_released += 1

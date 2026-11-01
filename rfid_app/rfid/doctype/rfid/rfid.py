@@ -11,6 +11,13 @@ class RFID(Document):
         self.validate_uuid()
         self.validate_status_transitions()
         self.validate_link_consistency()
+        self.sync_oddelek()
+
+    def sync_oddelek(self):
+        if self.link_ucenec:
+            self.oddelek = frappe.db.get_value("Ucenci", self.link_ucenec, "oddelek")
+        else:
+            self.oddelek = None
 
     def validate_uuid(self):
         if self.uuid:
