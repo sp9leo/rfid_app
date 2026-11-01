@@ -72,7 +72,7 @@
 		<div class="header-right">
 			<span class="meta">
 				{{ frappe.utils.format_date(today, "dd. MM. yyyy") }}
-				&nbsp;•&nbsp; Skupaj danes: <span id="forgot-count">{{ entries|length }}</span>
+				&nbsp;•&nbsp; Skupaj danes: {{ entries|length }}
 			</span>
 			<button type="button" class="print-btn no-print" onclick="window.print()">Natisni seznam</button>
 		</div>
@@ -89,7 +89,7 @@
 					<th>Obrok</th>
 				</tr>
 			</thead>
-			<tbody id="forgot-body">
+			<tbody>
 				{% if entries %}
 					{% for e in entries %}
 					{% set initials = (e.full_name or "").split() | map(attribute=0) | map("upper") | join(". ") %}
@@ -109,89 +109,7 @@
 				{% endif %}
 			</tbody>
 		</table>
-		<div class="autorefresh-note">Samodejno osveževanje vsakih 15 s.</div>
+		<div class="autorefresh-note">Samodejno osveževanje vsakih 30 s.</div>
 	</main>
-
-	<script>
-		function formatDate(s) {
-			if (!s) return "";
-			const parts = String(s).split("-");
-			if (parts.length !== 3) return s;
-			return parts[2] + ". " + parts[1] + ". " + parts[0];
-		}
-
-		function rowCell(text) {
-			const td = document.createElement("td");
-			td.textContent = text || "";
-			return td;
-		}
-
-		function initials(name) {
-			return String(name || "")
-				.trim()
-				.split(/\s+/)
-				.filter(Boolean)
-				.map((w) => w[0].toUpperCase() + ".")
-				.join(" ");
-		}
-
-		function nameCell(fullName) {
-			const td = document.createElement("td");
-			const short = document.createElement("span");
-			short.className = "name-initials";
-			short.textContent = initials(fullName);
-			const full = document.createElement("span");
-			full.className = "name-full";
-			full.textContent = fullName || "";
-			td.appendChild(short);
-			td.appendChild(full);
-			return td;
-		}
-
-		function render(items) {
-			const tbody = document.getElementById("forgot-body");
-			const count = document.getElementById("forgot-count");
-			count.textContent = String(items.length);
-
-			tbody.replaceChildren();
-
-			if (!items.length) {
-				const tr = document.createElement("tr");
-				const td = document.createElement("td");
-				td.colSpan = 5;
-				td.className = "empty";
-				td.textContent = "Ni vnosov.";
-				tr.appendChild(td);
-				tbody.appendChild(tr);
-				return;
-			}
-
-			items.forEach((e) => {
-				const tr = document.createElement("tr");
-				tr.appendChild(rowCell(formatDate(e.datum)));
-				tr.appendChild(rowCell(e.time));
-				tr.appendChild(nameCell(e.full_name));
-				tr.appendChild(rowCell(e.oddelek));
-				tr.appendChild(rowCell(e.storitev));
-				tbody.appendChild(tr);
-			});
-		}
-
-		async function refresh() {
-			try {
-				const resp = await fetch(
-					"/api/method/rfid_app.rfid.api.get_forgot_rfid_today",
-					{ credentials: "same-origin" }
-				);
-				const data = await resp.json();
-				render(data && data.message ? data.message : []);
-			} catch (e) {
-				// keep last rendered list on transient errors
-			}
-		}
-
-		refresh();
-		setInterval(refresh, 15000);
-	</script>
 </body>
 </html>
