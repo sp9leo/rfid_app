@@ -92,12 +92,12 @@
 			<tbody>
 				{% if entries %}
 					{% for e in entries %}
-					{% set initials = (e.full_name or "").split() | map(attribute=0) | map("upper") | join(". ") %}
+					{% set initials = (((e.full_name or "").split() | map(attribute=0) | join(". ") | upper) ~ ".") if e.full_name else "" %}
 					<tr>
 						<td>{{ frappe.utils.format_date(e.datum, "dd. MM. yyyy") }}</td>
 						<td>{{ e.time }}</td>
 						<td>
-							<span class="name-initials">{{ frappe.utils.escape_html(initials + "." if initials else "") }}</span>
+							<span class="name-initials">{{ frappe.utils.escape_html(initials) }}</span>
 							<span class="name-full">{{ frappe.utils.escape_html(e.full_name) }}</span>
 						</td>
 						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
