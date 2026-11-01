@@ -34,6 +34,16 @@ class TestRFID(FrappeTestCase):
 		self.rfid.status = "Neaktiven"
 		self.assertRaises(frappe.ValidationError, self.rfid.save)
 
+	def test_neaktiven_back_to_pripravljen(self):
+		self.rfid.status = "Neaktiven"
+		self.rfid.save(ignore_permissions=True)
+
+		self.rfid.status = "Pripravljen"
+		self.rfid.save(ignore_permissions=True)
+
+		self.assertEqual(self.rfid.status, "Pripravljen")
+		self.assertIsNone(self.rfid.link_ucenec)
+
 	def test_uuid_trimmed(self):
 		self.rfid.uuid = "  TEST-RFID-002  "
 		self.rfid.save(ignore_permissions=True)
@@ -123,6 +133,24 @@ class TestAssignRemove(FrappeTestCase):
 
 		self.rfid.reload()
 		self.assertEqual(self.rfid.status, "Neaktiven")
+
+	def test_reactivate_from_neaktiven(self):
+		from rfid_app.rfid.api import assign_rfid, remove_rfid, reactivate_rfid
+
+		assign_rfid(self.ucenec.name, self.rfid.name)
+		remove_rfid(self.rfid.name, "Neaktiven")
+
+		result = reactivate_rfid(self.rfid.name)
+		self.assertEqual(result["status"], "ok")
+
+		self.rfid.reload()
+		self.assertEqual(self.rfid.status, "Pripravljen")
+		self.assertIsNone(self.rfid.link_ucenec)
+
+	def test_reactivate_rejects_pripravljen(self):
+		from rfid_app.rfid.api import reactivate_rfid
+
+		self.assertRaises(frappe.ValidationError, reactivate_rfid, self.rfid.name)
 
 	def test_on_trash_ucenec_releases_rfid(self):
 		from rfid_app.rfid.api import assign_rfid

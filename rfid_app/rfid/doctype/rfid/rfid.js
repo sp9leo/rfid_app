@@ -3,8 +3,34 @@
 
 frappe.ui.form.on("RFID", {
   refresh(frm) {
-    if (frm.doc.link_ucenec && frm.doc.status === "Aktiven") {
-      frm.set_df_property("status", "read_only", 1);
+    const locked = !!frm.doc.link_ucenec && frm.doc.status === "Aktiven";
+    frm.set_df_property("status", "read_only", locked ? 1 : 0);
+
+    if (!frm.is_new() && frm.doc.status === "Neaktiven") {
+      frm.add_custom_button(__("Vrni v obtok"), function () {
+        frappe.confirm(
+          __("RFID {0} označiti kot Pripravljen in ga vrniti v obtok?", [
+            frm.doc.name,
+          ]),
+          function () {
+            frappe.call({
+              method: "rfid_app.rfid.api.reactivate_rfid",
+              args: { rfid: frm.doc.name },
+              freeze: true,
+              freeze_message: __("Vračanje v obtok..."),
+              callback: function (r) {
+                if (r.message) {
+                  frappe.show_alert({
+                    message: r.message.message,
+                    indicator: "green",
+                  });
+                  frm.reload_doc();
+                }
+              },
+            });
+          }
+        );
+      });
     }
 
     frm.fields_dict["izbrisi_rfid"]

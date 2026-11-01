@@ -84,6 +84,39 @@ def remove_rfid(rfid, new_status="Pripravljen"):
 
 
 @frappe.whitelist()
+def reactivate_rfid(rfid):
+    """Return a Neaktiven RFID to circulation (Pripravljen).
+
+    Used when a card is handed back, e.g. by a student who has left school.
+    Any leftover link to a student record is cleared first.
+    """
+    if not frappe.has_permission("RFID", "write"):
+        frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
+
+    rfid_doc = frappe.get_doc("RFID", rfid, for_update=True)
+
+    if rfid_doc.status != "Neaktiven":
+        frappe.throw(
+            _("Samo RFID s statusom Neaktiven je mogoče vrniti v obtok")
+        )
+
+    if rfid_doc.link_ucenec:
+        student_rfid = frappe.db.get_value("Ucenci", rfid_doc.link_ucenec, "rfid")
+        if student_rfid == rfid_doc.name:
+            frappe.db.set_value("Ucenci", rfid_doc.link_ucenec, "rfid", None)
+        rfid_doc.link_ucenec = None
+
+    rfid_doc.status = "Pripravljen"
+    rfid_doc.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    return {
+        "status": "ok",
+        "message": _("RFID {0} je ponovno pripravljen za uporabo").format(rfid),
+    }
+
+
+@frappe.whitelist()
 def replace_rfid(ucenec, new_rfid, reason=None):
     """Atomically replace a student's RFID.
 
