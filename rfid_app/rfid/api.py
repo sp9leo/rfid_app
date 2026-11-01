@@ -225,7 +225,8 @@ def _get_forgot_rfid_entries(log_date):
 
     for d in data:
         student = students.get(d["ucenec"], {})
-        d["full_name"] = student.get("full_name") or d["ucenec"]
+        # Kitchen display only: keep just the first two letters for privacy.
+        d["full_name"] = (student.get("full_name") or "")[:2]
         d["oddelek"] = student.get("oddelek") or ""
         d["time"] = frappe.utils.format_time(d["creation"]) if d["creation"] else ""
     return data
