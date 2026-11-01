@@ -51,6 +51,7 @@
 		tr:last-child td { border-bottom: none; }
 		.empty { text-align: center; color: #6c757d; padding: 40px 0 !important; font-size: 16px; }
 		.autorefresh-note { color: #6c757d; font-size: 12px; margin-top: 8px; text-align: right; }
+		.name-full { display: none; }
 
 		@media print {
 			body { background: #fff; }
@@ -60,6 +61,8 @@
 			main { padding: 0; max-width: none; }
 			table { box-shadow: none; }
 			th { background: #fff; }
+			.name-initials { display: none; }
+			.name-full { display: inline; }
 		}
 	</style>
 </head>
@@ -93,7 +96,10 @@
 					<tr>
 						<td>{{ frappe.utils.format_date(e.datum, "dd. MM. yyyy") }}</td>
 						<td>{{ e.time }}</td>
-						<td>{{ frappe.utils.escape_html(initials + "." if initials else "") }}</td>
+						<td>
+							<span class="name-initials">{{ frappe.utils.escape_html(initials + "." if initials else "") }}</span>
+							<span class="name-full">{{ frappe.utils.escape_html(e.full_name) }}</span>
+						</td>
 						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
 						<td>{{ frappe.utils.escape_html(e.storitev) }}</td>
 					</tr>
@@ -129,6 +135,19 @@
 				.join(" ");
 		}
 
+		function nameCell(fullName) {
+			const td = document.createElement("td");
+			const short = document.createElement("span");
+			short.className = "name-initials";
+			short.textContent = initials(fullName);
+			const full = document.createElement("span");
+			full.className = "name-full";
+			full.textContent = fullName || "";
+			td.appendChild(short);
+			td.appendChild(full);
+			return td;
+		}
+
 		function render(items) {
 			const tbody = document.getElementById("forgot-body");
 			const count = document.getElementById("forgot-count");
@@ -151,7 +170,7 @@
 				const tr = document.createElement("tr");
 				tr.appendChild(rowCell(formatDate(e.datum)));
 				tr.appendChild(rowCell(e.time));
-				tr.appendChild(rowCell(initials(e.full_name)));
+				tr.appendChild(nameCell(e.full_name));
 				tr.appendChild(rowCell(e.oddelek));
 				tr.appendChild(rowCell(e.storitev));
 				tbody.appendChild(tr);
