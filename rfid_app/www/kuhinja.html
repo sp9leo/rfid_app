@@ -89,10 +89,11 @@
 			<tbody id="forgot-body">
 				{% if entries %}
 					{% for e in entries %}
+					{% set initials = (e.full_name or "").split() | map(attribute=0) | map("upper") | join(". ") %}
 					<tr>
 						<td>{{ frappe.utils.format_date(e.datum, "dd. MM. yyyy") }}</td>
 						<td>{{ e.time }}</td>
-						<td>{{ frappe.utils.escape_html((e.full_name or "")[:2]) }}</td>
+						<td>{{ frappe.utils.escape_html(initials + "." if initials else "") }}</td>
 						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
 						<td>{{ frappe.utils.escape_html(e.storitev) }}</td>
 					</tr>
@@ -119,6 +120,15 @@
 			return td;
 		}
 
+		function initials(name) {
+			return String(name || "")
+				.trim()
+				.split(/\s+/)
+				.filter(Boolean)
+				.map((w) => w[0].toUpperCase() + ".")
+				.join(" ");
+		}
+
 		function render(items) {
 			const tbody = document.getElementById("forgot-body");
 			const count = document.getElementById("forgot-count");
@@ -141,7 +151,7 @@
 				const tr = document.createElement("tr");
 				tr.appendChild(rowCell(formatDate(e.datum)));
 				tr.appendChild(rowCell(e.time));
-				tr.appendChild(rowCell((e.full_name || "").slice(0, 2)));
+				tr.appendChild(rowCell(initials(e.full_name)));
 				tr.appendChild(rowCell(e.oddelek));
 				tr.appendChild(rowCell(e.storitev));
 				tbody.appendChild(tr);
