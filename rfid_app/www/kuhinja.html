@@ -92,7 +92,7 @@
 					<tr>
 						<td>{{ frappe.utils.format_date(e.datum, "dd. MM. yyyy") }}</td>
 						<td>{{ e.time }}</td>
-						<td>{{ frappe.utils.escape_html(e.full_name) }}</td>
+						<td>{{ frappe.utils.escape_html((e.full_name or "")[:2]) }}</td>
 						<td>{{ frappe.utils.escape_html(e.oddelek) }}</td>
 						<td>{{ frappe.utils.escape_html(e.storitev) }}</td>
 					</tr>
@@ -141,7 +141,7 @@
 				const tr = document.createElement("tr");
 				tr.appendChild(rowCell(formatDate(e.datum)));
 				tr.appendChild(rowCell(e.time));
-				tr.appendChild(rowCell(e.full_name));
+				tr.appendChild(rowCell((e.full_name || "").slice(0, 2)));
 				tr.appendChild(rowCell(e.oddelek));
 				tr.appendChild(rowCell(e.storitev));
 				tbody.appendChild(tr);
