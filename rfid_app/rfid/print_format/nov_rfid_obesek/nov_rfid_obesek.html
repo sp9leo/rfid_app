@@ -1,0 +1,49 @@
+<div style="font-family: Arial, sans-serif; color: #222; font-size: 12pt; line-height: 1.45; margin: 0 auto; max-width: 180mm;">
+  {% if not no_letterhead %}{{ letter_head or "" }}{% endif %}
+  {% set student = doc.get("link_ucenec") or doc.get("ucenec") or doc.get("ucenec_name") %}
+  {% set ime = frappe.db.get_value("Ucenci", student, "full_name") if student else (doc.get("ucenec_name") or "") %}
+  {% set oddelek = frappe.db.get_value("Ucenci", student, "oddelek") if student else (doc.get("oddelek") or "") %}
+  {% set solsko_leto = frappe.db.get_value("Ucenci", student, "solsko_leto") if student else (doc.get("solsko_leto") or "") %}
+  {% set uuid = doc.get("uuid") or doc.get("new_rfid") or doc.get("old_rfid") or "" %}
+  {% set current_year = frappe.utils.now_datetime().year %}
+  {% if not solsko_leto %}
+    {% set solsko_leto = current_year ~ "/" ~ (current_year + 1) %}
+  {% endif %}
+
+  <div style="text-align: left; margin-bottom: 12mm;">
+    <div>{{ oddelek or "" }}</div>
+    <strong>{{ ime or "" }}</strong>
+  </div>
+
+  <h2 style="text-align: center; font-size: 16pt; margin: 0 0 12mm;">IZJAVA ZA PREVZEM RFID obeska</h2>
+
+  <p style="text-align: justify; margin: 0 0 14mm;">Osnovna šola Antona Žnideršiča Ilirska Bistrica učencu od šolskega leta {{ solsko_leto }} zagotovi možnost uporabe RFID obeska za evidenco prevzetih obrokov v skladu s spodnjimi pogoji in ob soglasju staršev.</p>
+
+  <p style="margin: 0 0 2mm;">Podpisani:_____________________________________________________________________</p>
+  <p style="margin: 0 0 14mm; font-size: 10pt;">ime in priimek starša oz. zakonitega zastopnika</p>
+
+  <p style="margin: 0 0 14mm;">RFID obesek z UUID: <strong>{{ uuid }}</strong></p>
+
+  <p style="text-align: justify; margin: 0 0 16mm;">RFID obesek učenec uporabi v jedilnici ob prevzemu obroka in ga nato hrani pri sebi do naslednje uporabe. Učenec RFID obesek prisloni na za to namenjen čitalec, kjer se zabeleži prisotnost pri obroku. Zgoraj podpisani potrjujem, da sem seznanjen s pravilnim načinom uporabe RFID obeska, ter da bom obesek uporabljal le za to določene namene, da ne bom izdeloval dvojnikov, ter da obeska in unikatne(UUID) kode ne bom posredoval tretjim osebam. Z RFID obeskom bom ravnal odgovorno, ne bom ga poškodoval ali v kakršnikoli obliki spreminjal. V primeru neprimernega rokovanja ali izgube RFID obeska bom povrnil nastalo škodo.</p>
+
+  <div style="display: flex; justify-content: space-between; gap: 20mm;">
+    <div>Datum:__________________</div>
+    <div>Opremo prevzel:_______________________________</div>
+  </div>
+  <div style="text-align: right; font-size: 10pt; margin-bottom: 14mm;">podpis starša oz. zakonitega zastopnika</div>
+
+  <div style="border-top: 1px solid #aaa; padding-top: 6mm;">
+    <div>Ime in priimek učenca: <strong>{{ ime or "" }}</strong></div>
+    <div>RFID obesek z UUID: <strong>{{ uuid }}</strong></div>
+    <p style="margin: 6mm 0 3mm;">RFID obesek je last Osnovne Šole Antona Žnideršiča in ga je potrebno vrniti, ko:</p>
+    <p style="margin: 0 0 2mm;">- učenec oz. učenka preneha uporabljati storitve povezane z RFID obeskom (npr. ne obiskuje več kosila..)</p>
+    <p style="margin: 0 0 2mm;">- zamenja izobraževalno ustanovo,</p>
+    <p style="margin: 0 0 12mm;">- zaključi šolanje.</p>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; font-size: 9pt; color: #777;">
+    <div>{{ frappe.utils.format_datetime(frappe.utils.now_datetime(), "dd MMM yyyy HH:mm:ss") }}</div>
+    <div style="text-align: right;">{{ ime or "" }}<br>{{ uuid }}</div>
+  </div>
+  {% if not no_letterhead %}{{ footer or "" }}{% endif %}
+</div>

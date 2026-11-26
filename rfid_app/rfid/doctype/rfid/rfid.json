@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "autoname": "field:uuid",
  "creation": "2024-07-28 12:01:02.713468",
  "doctype": "DocType",

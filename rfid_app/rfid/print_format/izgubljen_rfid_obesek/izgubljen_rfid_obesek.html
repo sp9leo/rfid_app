@@ -1,0 +1,31 @@
+<div style="font-family: Arial, sans-serif; color: #222; font-size: 12pt; line-height: 1.5; margin: 0 auto; max-width: 180mm;">
+  {% if not no_letterhead %}{{ letter_head or "" }}{% endif %}
+  <h2 style="text-align: center; font-size: 16pt; margin: 8mm 0 14mm;">IZJAVA O IZGUBLJENEM RFID OBESKU</h2>
+
+  {% set student = doc.get("link_ucenec") or doc.get("ucenec") or doc.get("ucenec_name") %}
+  {% set ime = frappe.db.get_value("Ucenci", student, "full_name") if student else (doc.get("ucenec_name") or "") %}
+  {% set oddelek = frappe.db.get_value("Ucenci", student, "oddelek") if student else (doc.get("oddelek") or "") %}
+  {% set uuid = doc.get("uuid") or doc.get("old_rfid") or doc.get("new_rfid") or "" %}
+
+  <p style="margin: 0 0 6mm;">
+    Izjavljam da je učenec/ka <strong>{{ ime or "" }}</strong>, oddelek <strong>{{ oddelek or "" }}</strong> izgubil/a
+  </p>
+  <p style="margin: 0 0 10mm;">
+    RFID obesek z UUID: <strong>{{ uuid }}</strong>
+  </p>
+
+  <p style="margin: 0 0 20mm; text-align: justify;">
+    Šola bo učencu/ki izdala nov RFID obesek, za izgubljenega pa se zaračuna nadomestilo za
+    zamenjavo izgubljenega obeska v višini 5€, ki bo učencu obračunan na mesečni položnici.
+  </p>
+
+  <div style="display: flex; justify-content: space-between; gap: 20mm;">
+    <div>Datum:__________________</div>
+    <div>Podpis:_________________________</div>
+  </div>
+
+  <div style="margin-top: 40mm; text-align: right; font-size: 9pt; color: #777;">
+    {{ frappe.utils.format_datetime(frappe.utils.now_datetime(), "dd MMM yyyy HH:mm:ss") }}
+  </div>
+  {% if not no_letterhead %}{{ footer or "" }}{% endif %}
+</div>
